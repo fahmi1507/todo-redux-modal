@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { findOne, removeTodo } from "../redux/actions/todoActions";
+import { findOne, removeTodo, addTodo } from "../redux/actions/todoActions";
 import Modal from "react-modal";
 import moment from "moment";
 
@@ -26,21 +26,30 @@ const Todo = ({ data }) => {
     closeModal();
   };
 
-  const handleUpdate = (id) => {
-    dispatch(findOne(id));
+  const handleUpdate = (e) => {
+    // dispatch(findOne(id));
+
+    e.preventDefault();
+
+    dispatch(
+      addTodo({
+        id: data.id,
+        date: data.date,
+        task: input,
+        status,
+      })
+    );
+
+    closeModal();
   };
 
   // modal functionality
-  let subtitle;
-  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState(data.task);
+  const [status, setStatus] = useState(data.status);
 
   function openModal() {
     setIsOpen(true);
-  }
-
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    subtitle.style.color = "#f00";
   }
 
   function closeModal() {
@@ -63,24 +72,41 @@ const Todo = ({ data }) => {
 
       {/* modal */}
 
-      <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="Example Modal">
-        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>{data.task}</h2>
-        <div>
-          Date: <p>{moment(data.date).format("MMMM Do YYYY")}</p>
-          Status<p>{data.status}</p>
-        </div>
-
-        <div className="w-100">
-          <div className="d-flex btn-group mb-2">
-            <button onClick={() => handleRemove(data.id)} className="btn btn-block btn-danger">
-              DELETE
-            </button>
-            <button className="btn btn-block btn-info">UPDATE</button>
+      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel="Example Modal">
+        <form onSubmit={handleUpdate}>
+          <div className="form-group">
+            <label htmlFor="task" className="form-label">
+              Task
+            </label>
+            <input type="text" className="form-control mb-2" value={input} onChange={(e) => setInput(e.target.value)}></input>
           </div>
+          <div className="form-group">
+            <label htmlFor="status" className="form-label">
+              Status
+            </label>
+            <input type="number" min="0" max="1" className="form-control mb-2" value={status} onChange={(e) => setStatus(e.target.value)}></input>
+          </div>
+
+          <div>
+            Date: <p>{moment(data.date).format("MMMM Do YYYY")}</p>
+          </div>
+
+          <div className="w-100">
+            <div className="d-flex btn-group mb-2">
+              <button type="submit" className="btn btn-block btn-info">
+                UPDATE
+              </button>
+            </div>
+          </div>
+        </form>
+        <div className="btn-group w-100">
+          <button onClick={() => handleRemove(data.id)} className="btn btn-block btn-danger">
+            DELETE
+          </button>
+          <button className="btn btn-primary" onClick={closeModal}>
+            CLOSE
+          </button>
         </div>
-        <button className="btn btn-primary" onClick={closeModal}>
-          CLOSE
-        </button>
       </Modal>
     </div>
   );
