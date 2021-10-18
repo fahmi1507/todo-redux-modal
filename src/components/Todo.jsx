@@ -18,7 +18,7 @@ const customStyles = {
 
 Modal.setAppElement("#root");
 
-const Todo = ({ data }) => {
+const Todo = ({ id, title, description, createdAt, status }) => {
   const dispatch = useDispatch();
 
   const handleRemove = (id) => {
@@ -33,10 +33,11 @@ const Todo = ({ data }) => {
 
     dispatch(
       addTodo({
-        id: data.id,
-        date: data.date,
-        task: input,
-        status,
+        id,
+        title: input,
+        description,
+        status: newStatus,
+        createdAt,
       })
     );
 
@@ -45,8 +46,8 @@ const Todo = ({ data }) => {
 
   // modal functionality
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [input, setInput] = useState(data.task);
-  const [status, setStatus] = useState(data.status);
+  const [input, setInput] = useState(title);
+  const [newStatus, setStatus] = useState(status);
 
   function openModal() {
     setIsOpen(true);
@@ -58,10 +59,10 @@ const Todo = ({ data }) => {
 
   return (
     <div className="mb-2">
-      <div className="card p-2" style={{ cursor: "pointer" }} onDoubleClick={() => handleUpdate(data.id)}>
+      <div className="card p-2" style={{ cursor: "pointer" }} onDoubleClick={() => handleUpdate(id)}>
         <div className="d-flex align-items-center justify-content-between">
           <p className="m-0 text-justify" style={{ fontSize: "20px" }}>
-            {data.task}
+            {title}
           </p>
 
           <button className="btn btn-success" onClick={openModal}>
@@ -75,8 +76,8 @@ const Todo = ({ data }) => {
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel="Example Modal">
         <form onSubmit={handleUpdate}>
           <div className="form-group">
-            <label htmlFor="task" className="form-label">
-              Task
+            <label htmlFor="title" className="form-label">
+              Title
             </label>
             <input type="text" className="form-control mb-2" value={input} onChange={(e) => setInput(e.target.value)}></input>
           </div>
@@ -84,11 +85,11 @@ const Todo = ({ data }) => {
             <label htmlFor="status" className="form-label">
               Status
             </label>
-            <input type="number" min="0" max="1" className="form-control mb-2" value={status} onChange={(e) => setStatus(e.target.value)}></input>
+            <input type="number" min="0" max="1" className="form-control mb-2" value={newStatus} onChange={(e) => setStatus(e.target.value)}></input>
           </div>
 
           <div>
-            Date: <p>{moment(data.date).format("MMMM Do YYYY")}</p>
+            Date: <p>{moment(createdAt).format("MMMM Do YYYY")}</p>
           </div>
 
           <div className="w-100">
@@ -100,7 +101,7 @@ const Todo = ({ data }) => {
           </div>
         </form>
         <div className="btn-group w-100">
-          <button onClick={() => handleRemove(data.id)} className="btn btn-block btn-danger">
+          <button disabled={+status === 1} onClick={() => handleRemove(id)} className="btn btn-block btn-danger">
             DELETE
           </button>
           <button className="btn btn-primary" onClick={closeModal}>

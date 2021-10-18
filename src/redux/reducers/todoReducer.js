@@ -8,6 +8,7 @@ const initialState = {
 };
 
 export const todoReducer = (state = initialState, { type, payload }) => {
+  console.log(payload);
   switch (type) {
     case ActionTypes.ADD_TODO:
       return { ...state, todos: [...state.todos, payload] };
@@ -15,14 +16,17 @@ export const todoReducer = (state = initialState, { type, payload }) => {
     case ActionTypes.REMOVE_TODO:
       return { ...state, todos: state.todos.filter((e) => e.id !== payload) };
 
-    case ActionTypes.SET_TODO:
-      return { ...state, todo: state.todos.find((e) => e.id === payload) };
-
-    case ActionTypes.EMPTY_TODO:
-      return { ...state, todo: payload };
-
     case ActionTypes.UPDATE_TODO:
       return { ...state, todos: state.todos.filter((e) => e.id !== payload.id).concat(payload) };
+
+    case ActionTypes.SET_TODO:
+      return { ...state, todos: state.todos.concat(payload) };
+
+    case ActionTypes.SET_LOADING:
+      return { ...state, loading: payload.loading };
+
+    case ActionTypes.SET_ERROR:
+      return { ...state, error: payload.error };
 
     default:
       return state;

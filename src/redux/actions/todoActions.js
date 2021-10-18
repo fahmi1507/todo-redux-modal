@@ -14,13 +14,6 @@ function updateTodo(todo) {
   };
 }
 
-export function emptyTodo(empty) {
-  return {
-    type: ActionTypes.EMPTY_TODO,
-    payload: empty,
-  };
-}
-
 export function addTodo(newTodo) {
   return (dispatch, getState) => {
     const { todos } = getState().allTodos;
@@ -42,9 +35,23 @@ export function removeTodo(id) {
   };
 }
 
-export function findOne(id) {
+export function setTodo(todos) {
   return {
     type: ActionTypes.SET_TODO,
-    payload: id,
+    payload: todos,
+  };
+}
+
+export function setLoading(loading) {
+  return {
+    type: ActionTypes.SET_LOADING,
+    payload: loading,
+  };
+}
+
+export function setError(error) {
+  return {
+    type: ActionTypes.SET_ERROR,
+    payload: error,
   };
 }
