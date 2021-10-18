@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { findOne, removeTodo, addTodo } from "../redux/actions/todoActions";
+import { removeTodo, addTodo } from "../redux/actions/todoActions";
 import Modal from "react-modal";
-import moment from "moment";
+import Swal from "sweetalert2";
 
 const customStyles = {
   content: {
@@ -18,12 +18,25 @@ const customStyles = {
 
 Modal.setAppElement("#root");
 
-const Todo = ({ id, title, description, createdAt, status }) => {
+const Todo = ({ id, title, description, createdAt, status, done }) => {
   const dispatch = useDispatch();
 
   const handleRemove = (id) => {
-    dispatch(removeTodo(id));
-    closeModal();
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(removeTodo(id));
+        Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        closeModal();
+      }
+    });
   };
 
   const handleUpdate = (e) => {
@@ -37,9 +50,11 @@ const Todo = ({ id, title, description, createdAt, status }) => {
         title: input,
         description,
         status: newStatus,
-        createdAt,
+        createdAt: newDate,
       })
     );
+
+    Swal.fire("Success!", "Task Updated", "success");
 
     closeModal();
   };
@@ -48,6 +63,8 @@ const Todo = ({ id, title, description, createdAt, status }) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState(title);
   const [newStatus, setStatus] = useState(status);
+  const [newDesc, setNewDesc] = useState(description);
+  const [newDate, setNewDate] = useState(createdAt.slice(0, 10));
 
   function openModal() {
     setIsOpen(true);
@@ -61,7 +78,7 @@ const Todo = ({ id, title, description, createdAt, status }) => {
     <div className="mb-2">
       <div className="card p-2" style={{ cursor: "pointer" }} onDoubleClick={() => handleUpdate(id)}>
         <div className="d-flex align-items-center justify-content-between">
-          <p className="m-0 text-justify" style={{ fontSize: "20px" }}>
+          <p className="m-0 text-justify" style={{ textDecoration: done ? "line-through" : "none" }}>
             {title}
           </p>
 
@@ -83,13 +100,21 @@ const Todo = ({ id, title, description, createdAt, status }) => {
           </div>
           <div className="form-group">
             <label htmlFor="status" className="form-label">
+              Description
+            </label>
+            <input type="text" className="form-control mb-2" value={newDesc} onChange={(e) => setNewDesc(e.target.value)}></input>
+          </div>
+          <div className="form-group">
+            <label htmlFor="status" className="form-label">
               Status
             </label>
             <input type="number" min="0" max="1" className="form-control mb-2" value={newStatus} onChange={(e) => setStatus(e.target.value)}></input>
           </div>
-
-          <div>
-            Date: <p>{moment(createdAt).format("MMMM Do YYYY")}</p>
+          <div className="form-group">
+            <label htmlFor="Date" className="form-label">
+              Date
+            </label>
+            <input type="date" className="form-control mb-2" value={newDate} onChange={(e) => setNewDate(e.target.value)}></input>
           </div>
 
           <div className="w-100">

@@ -1,4 +1,8 @@
-.app {
-  margin: 0 auto;
-  padding: 0 15px;
+.todos {
+  border-radius: 10px;
+  background-color: #c37b89;
+}
+.todos.done {
+  border-radius: 10px;
+  background-color: #bccc9a;
 }
