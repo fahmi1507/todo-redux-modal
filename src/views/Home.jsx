@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Todo from "../components/Todo";
 import { addTodo, setError, setLoading, setTodo } from "../redux/actions/todoActions";
 import "./home.css";
+import Swal from "sweetalert2";
 
 const url = "https://virtserver.swaggerhub.com/hanabyan/todo/1.0.0/to-do-list";
 
@@ -13,13 +14,17 @@ const Home = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [taskDate, setTaskDate] = useState("");
-  const [pendingTodo, setPendingTodo] = useState([]);
-  const [doneTodo, setDoneTodo] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (title === "" || taskDate === "") {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "All field required!",
+      });
+
       return;
     }
 
@@ -39,14 +44,14 @@ const Home = () => {
 
   useEffect(() => {
     dispatch(setLoading(true));
+
     const fetchData = async () => {
       try {
         const req = await fetch(url);
         const data = await req.json();
-        console.log(data);
         dispatch(setTodo(data));
       } catch (error) {
-        dispatch(setError({ error, err: true }));
+        dispatch(setError(error));
         console.log(error);
       }
     };
@@ -56,25 +61,17 @@ const Home = () => {
     dispatch(setLoading(false));
   }, [dispatch]);
 
-  useEffect(() => {
-    setPendingTodo(
-      todos
-        .filter((i) => +i.status === 0)
-        .sort(function (a, b) {
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        })
-    );
-  }, [todos]);
+  const pending = todos
+    .filter((i) => +i.status === 0)
+    .sort(function (a, b) {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
 
-  useEffect(() => {
-    setDoneTodo(
-      todos
-        .filter((i) => +i.status !== 0)
-        .sort(function (a, b) {
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        })
-    );
-  }, [todos]);
+  const completed = todos
+    .filter((i) => +i.status !== 0)
+    .sort(function (a, b) {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
   return (
     <div className="container pb-3">
@@ -104,16 +101,16 @@ const Home = () => {
       <div className="row gy-3 justify-content-center">
         <div className="col-md-6 text-center  ">
           <div className="todos p-2">
-            <h3>On Going</h3>
-            {pendingTodo.map(({ id, title, description, createdAt, status }) => (
+            <h4>ACTIVE</h4>
+            {pending.map(({ id, title, description, createdAt, status }) => (
               <Todo key={id} id={id} title={title} description={description} createdAt={createdAt} status={status} />
             ))}
           </div>
         </div>
         <div className="col-md-6 text-center   ">
           <div className="todos done p-2">
-            <h3>Done</h3>
-            {doneTodo.map(({ id, title, description, createdAt, status }) => (
+            <h4>COMPLETED</h4>
+            {completed.map(({ id, title, description, createdAt, status }) => (
               <Todo key={id} id={id} title={title} description={description} done={true} createdAt={createdAt} status={status} />
             ))}
           </div>

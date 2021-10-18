@@ -33,15 +33,13 @@ const Todo = ({ id, title, description, createdAt, status, done }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(removeTodo(id));
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        Swal.fire("Deleted!", "Your task has been deleted.", "success");
         closeModal();
       }
     });
   };
 
   const handleUpdate = (e) => {
-    // dispatch(findOne(id));
-
     e.preventDefault();
 
     dispatch(
@@ -76,7 +74,7 @@ const Todo = ({ id, title, description, createdAt, status, done }) => {
 
   return (
     <div className="mb-2">
-      <div className="card p-2" style={{ cursor: "pointer" }} onDoubleClick={() => handleUpdate(id)}>
+      <div className="card p-2" style={{ cursor: "pointer" }}>
         <div className="d-flex align-items-center justify-content-between">
           <p className="m-0 text-justify" style={{ textDecoration: done ? "line-through" : "none" }}>
             {title}
@@ -119,7 +117,7 @@ const Todo = ({ id, title, description, createdAt, status, done }) => {
 
           <div className="w-100">
             <div className="d-flex btn-group mb-2">
-              <button type="submit" className="btn btn-block btn-info">
+              <button type="submit" className="btn btn-block btn-warning">
                 UPDATE
               </button>
             </div>

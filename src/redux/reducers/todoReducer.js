@@ -8,7 +8,6 @@ const initialState = {
 };
 
 export const todoReducer = (state = initialState, { type, payload }) => {
-  console.log(payload);
   switch (type) {
     case ActionTypes.ADD_TODO:
       return { ...state, todos: [...state.todos, payload] };
@@ -23,10 +22,10 @@ export const todoReducer = (state = initialState, { type, payload }) => {
       return { ...state, todos: state.todos.concat(payload) };
 
     case ActionTypes.SET_LOADING:
-      return { ...state, loading: payload.loading };
+      return { ...state, loading: payload };
 
     case ActionTypes.SET_ERROR:
-      return { ...state, error: payload.error };
+      return { ...state, error: payload };
 
     default:
       return state;
